@@ -1,0 +1,30 @@
+name: Deploy Database Setup
+
+on:
+  push:
+    branches: [ deploy ]
+
+jobs:
+  setup-database:
+    runs-on: self-hosted
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Clean database
+      run: npx ts-node remove_db.ts mongodb://127.0.0.1:27017/my_library_db
+      
+    - name: Insert sample data
+      run: npx ts-node insert_sample_db.ts mongodb://127.0.0.1:27017/my_library_db
+      
+    - name: Notify completion
+      run: echo "Database setup completed successfully"
